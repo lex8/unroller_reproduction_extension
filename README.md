@@ -1,4 +1,20 @@
 
+# CS 244 Extensions 
+
+## The Plotter Script 
+
+The plotter script is a flexible Python program that given parameters to plot can reproduce any of the figures in the paper after running ./loop-simulator.py on any of the paper figures. It takes the following arguments: 
+
+1. Path to the csv output of the loop-simulator run 
+2. X Axis Column Value 
+3. Y Axis Column Value 
+4. The Column Value for which to plot different lines 
+5. Comma separated values to split data into lines on (e.x. 1,2,3)
+
+Here is a sample of how to run this command to reproduce figure 3 assuming that the data can be found at fig3.txt: 
+```
+python plotter.py fig3.txt MinL AvgTime MinB 0,3,7
+```
 # Unroller
 
 **Detecting Routing Loops in the Data Plane**: _Jan Kučera (CESNET); Ran Ben Basat (Harvard University); Mário Kuka (CESNET); Gianni Antichi (Queen Mary University of London); Minlan Yu and Michael Mitzenmacher (Harvard University)._<br/>
