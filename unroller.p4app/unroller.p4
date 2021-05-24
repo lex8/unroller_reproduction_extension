@@ -28,6 +28,10 @@ struct unroller_metadata_t {
     bit<32> swid0;	// hashed identifier 0
     // for using more switch IDs 1, 2, ...
     // ... the code needs to be copied
+    bit<32> swid1;	// hashed identifier 1
+    bit<32> swid2;	// hashed identifier 2
+    bit<32> swid3;	// hashed identifier 3
+
 }
 
 /*/

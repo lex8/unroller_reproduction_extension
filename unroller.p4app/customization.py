@@ -16,6 +16,9 @@ UNROLLER_B = [1]
 # List of switch IDs making the loop
 UNROLLER_L = [6, 3, 2, 7]
 
+# Destination 
+DEST = [4]
+
 # The threshold for reporting a loop
 UNROLLER_TH = 1
 

@@ -19,3 +19,27 @@ UNROLLER_L = [6, 3, 2, 7]
 # The threshold for reporting a loop
 UNROLLER_TH = 1
 ```
+
+Lexi's code annotations: 
+```
+unroller.config
+
+mc_mgrp_create 1  #creates a multicast group with id 1
+mc_mgrp_create 2  #creates a multicast group with id 2
+mc_node_create 0 1 #creates a multicast node with rid value 0 and gives it port 1 
+mc_node_create 1 2 #rid 1, port 2
+mc_node_associate 1 1 #associates node 1 to multicast group 1
+mc_node_associate 2 0 #associates node 0 to multicast group 2
+register_write cfg_swid_reg 0 0  #register write allows you to write a value into an indexed instance of a register which here is called cfg_switd_reg
+register_write cfg_thcnt_reg 0 1
+```
+
+From headers.p4
+```
+header unroller_head_t {
+    bit<16> etherType;  
+    bit<16> hopid; 
+    bit<8> thcnt; #value of the threshold counter
+    bit<8> swids; #switch ids currently seen 
+}
+```
