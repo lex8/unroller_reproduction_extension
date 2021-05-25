@@ -2,15 +2,6 @@ import math
 import csv
 import sys
 
-
-def filterLine(s):
-  a = s[0]
-  s = s[s.find("{") + 1:]
-  b = s[0]
-  s = s[s.find(":") + 2:]
-  c = s[0]
-  return a, b, c
-
 class Packet: 
      def __init__(self, src, dst, ttl):  
         self.ttl = ttl
@@ -66,7 +57,6 @@ class Topology:
         self.links = []
         self.nodes = []
         self.routingTable = {}
-        self.namedNodes = {}
 
     def createSimpleTopology(self): 
         self.routingTable = {
@@ -91,9 +81,10 @@ class Topology:
     def createRoutingTableFromPath(self, path):
       with open(path) as csvfile:
         tableItems = csv.reader(csvfile)
-        for ti in tableItems:
-          a, b, c = filterLine(ti[0])
-          self.routingTable[a] = {b : c}
+        for i, ti in enumerate(tableItems):
+          lineDict = {int(i.split(":")[0].strip()) : int(i.split(":")[1].strip()) for i in ti}
+          self.routingTable[i] = lineDict
+          self.nodes.append(Node(i + 1, lineDict))
 
     def createTopologyFromPath(self, path):
       with open(path) as csvfile:
@@ -104,13 +95,13 @@ class Topology:
 class Network: 
      def __init__(self, b):  
          self.b = b 
-         self.topology = Topology() 
+         # self.topology = Topology() 
          
          self.loop = False 
          self.done = False
          self.phase_size = 1
          self.hops = 0 
-         self.topology.createSimpleTopology()
+         # self.topology.createSimpleTopology()
 
      def simulate(self, _src, _dst): 
          self.loop = False
@@ -172,8 +163,9 @@ class Network:
 
 
 network = Network(4)
+network.topology = Topology()
+
 if len(sys.argv) > 1:
-  network.topology = Topology()
   for i in range(1, len(sys.argv)):
     #The next argument is the path to a cv containing routing table data
     if sys.argv[i] == "-rt":
@@ -182,6 +174,8 @@ if len(sys.argv) > 1:
     #The next argument is the path to a cv containing topology data
     elif sys.argv[i] == "-t":
       network.topology.createTopologyFromPath(sys.argv[i + 1])
+else:
+  network.topology.createSimpleTopology()
 
 
 
