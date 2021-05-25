@@ -37,7 +37,6 @@ class Node:
             return True
         print("Packet swid " + str(packet.swid))
         if self.swid == packet.swid: 
-            print("here")
             network.loop = True
 
         if packet.hop_count == (network.phase_size - 1): 
@@ -70,16 +69,18 @@ class Topology:
         self.namedNodes = {}
 
     def createSimpleTopology(self): 
-        routingTables = {
-            0 : {6 : 2}, 
-            1 : {6 : 3},
-            2 : {6 : 4},
-            3 : {6 : 1},
-            4 : {6 : 6},
-            5 : {6 : 6},
+        self.routingTable = {
+            0 : {6 : 2, 5: 2}, 
+            1 : {6 : 3, 5: 3},
+            2 : {6 : 4, 5: 4},
+            3 : {6 : 1, 5: 1},
+            4 : {6 : 6, 5: 5},
+            5 : {6 : 6, 5: 5},
         }
+
         for i in range (1, 7):
-            self.nodes.append(Node(i, routingTables[i - 1]))
+            self.nodes.append(Node(i, self.routingTable[i - 1]))
+
         self.links.append(Link(self.nodes[0], self.nodes[1]))
         self.links.append(Link(self.nodes[0], self.nodes[3])) 
         self.links.append(Link(self.nodes[3], self.nodes[2]))
@@ -92,7 +93,7 @@ class Topology:
         tableItems = csv.reader(csvfile)
         for ti in tableItems:
           a, b, c = filterLine(ti[0])
-          self.nodes.append(Node(a, {b, c}))
+          self.routingTable[a] = {b : c}
 
     def createTopologyFromPath(self, path):
       with open(path) as csvfile:
@@ -104,41 +105,92 @@ class Network:
      def __init__(self, b):  
          self.b = b 
          self.topology = Topology() 
+         
          self.loop = False 
          self.done = False
          self.phase_size = 1
+         self.hops = 0 
+         self.topology.createSimpleTopology()
 
      def simulate(self, _src, _dst): 
-         self.topology.createSimpleTopology()
+         self.loop = False
+         self.done = False
          packet = Packet(src = _src , dst = _dst, ttl = 20)
          curr_node = next((x for x in self.topology.nodes if x.swid == packet.src), None)
-         hops = 0 
          while(True): 
-            hops += 1
+            self.hops += 1
             val = curr_node.unroller_alg(packet, self)
             if self.loop:
+              # re route from source
+            #  print(self.rerouteFromPath(self.netBfs(packet.src, packet.dst)))
+              # re route from curr 
+              print("Rerouting to generate this new table: ")
+              print(self.rerouteFromPath(self.netBfs(curr_node.swid, packet.dst)))  
               break
             curr_node = next((x for x in self.topology.nodes if x.swid == curr_node.next_hop), None) 
             if self.done: 
-                print("Routed successfully after " + hops + " hops")
+                print("Routed successfully after " + str(self.hops) + " hops")
                 break 
 
+     def netBfs(self, src, dst): 
+         q = []
+         seen = [] 
+         q.append((src, [src]))
+         seen.append(src)
+         while len(q) > 0: 
+             curr, path = q[0]
+             q.pop(0)
+             if curr ==dst:
+                 return path
+             for link in [x for x in self.topology.links if x.nodeA.swid == curr or x.nodeB.swid == curr]:
+                 if link.nodeA.swid != curr and link.nodeA.swid not in seen:
+                    newPath = path.copy()
+                    newPath.append(link.nodeA.swid)
+                    seen.append(link.nodeA.swid)
+                    q.append((link.nodeA.swid, newPath))
+                    self.hops += 1
+                 elif link.nodeB.swid not in seen: 
+                    newPath = path.copy()
+                    newPath.append(link.nodeB.swid)
+                    seen.append(link.nodeB.swid)
+                    q.append((link.nodeB.swid, newPath))
+                    self.hops += 1
 
 
+     def rerouteFromPath(self, path):
+            dest = path[-1]
+            for i in range(0, len(path) - 1):
+               entry = path[i] - 1
+               self.topology.routingTable[entry][dest] = path[i + 1]
+            temp = []
+            for i in range (1, len(self.topology.nodes) + 1):
+                temp.append(Node(i, self.topology.routingTable[i - 1]))
+            self.topology.nodes = temp
+            return self.topology.routingTable
+
+
+
+
+network = Network(4)
 if len(sys.argv) > 1:
-  top = Topology();
+  network.topology = Topology()
   for i in range(1, len(sys.argv)):
     #The next argument is the path to a cv containing routing table data
     if sys.argv[i] == "-rt":
-      top.createRoutingTableFromPath(sys.argv[i + 1])
+      network.topology.createRoutingTableFromPath(sys.argv[i + 1])
 
     #The next argument is the path to a cv containing topology data
     elif sys.argv[i] == "-t":
-      top.createTopologyFromPath(sys.argv[i + 1]);
+      network.topology.createTopologyFromPath(sys.argv[i + 1])
 
-# Below is commented out for testing purposes
 
-# network = Network(4)
-# network.simulate(1, 6)
+
+network.simulate(1, 6)
+network.simulate(1, 6)
+network.simulate(1, 5)
+network.simulate(1, 5)
+
+#work on hop counting
+# work on various simulations
 
 
