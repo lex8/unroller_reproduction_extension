@@ -1,4 +1,15 @@
 import math
+import csv
+import sys
+
+
+def filterLine(s):
+  a = s[0]
+  s = s[s.find("{") + 1:]
+  b = s[0]
+  s = s[s.find(":") + 2:]
+  c = s[0]
+  return a, b, c
 
 class Packet: 
      def __init__(self, src, dst, ttl):  
@@ -55,6 +66,8 @@ class Topology:
     def __init__(self): 
         self.links = []
         self.nodes = []
+        self.routingTable = {}
+        self.namedNodes = {}
 
     def createSimpleTopology(self): 
         routingTables = {
@@ -73,6 +86,19 @@ class Topology:
         self.links.append(Link(self.nodes[2], self.nodes[1]))
         self.links.append(Link(self.nodes[2], self.nodes[4]))
         self.links.append(Link(self.nodes[4], self.nodes[5]))
+
+    def createRoutingTableFromPath(self, path):
+      with open(path) as csvfile:
+        tableItems = csv.reader(csvfile)
+        for ti in tableItems:
+          a, b, c = filterLine(ti[0])
+          self.nodes.append(Node(a, {b, c}))
+
+    def createTopologyFromPath(self, path):
+      with open(path) as csvfile:
+        topologyItems = csv.reader(csvfile, delimiter=',')
+        for ti in topologyItems:
+          self.links.append(Link(self.nodes[int(ti[0])], self.nodes[int(ti[1])]))
 
 class Network: 
      def __init__(self, b):  
@@ -97,9 +123,22 @@ class Network:
                 print("Routed successfully after " + hops + " hops")
                 break 
 
-        
 
 
+if len(sys.argv) > 1:
+  top = Topology();
+  for i in range(1, len(sys.argv)):
+    #The next argument is the path to a cv containing routing table data
+    if sys.argv[i] == "-rt":
+      top.createRoutingTableFromPath(sys.argv[i + 1])
 
-network = Network(4)
-network.simulate(1, 6)
+    #The next argument is the path to a cv containing topology data
+    elif sys.argv[i] == "-t":
+      top.createTopologyFromPath(sys.argv[i + 1]);
+
+# Below is commented out for testing purposes
+
+# network = Network(4)
+# network.simulate(1, 6)
+
+
