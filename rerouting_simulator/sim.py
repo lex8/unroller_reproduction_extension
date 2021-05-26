@@ -55,6 +55,7 @@ class Topology:
     def __init__(self): 
         self.links = []
         self.nodes = []
+        self.nodeSwids = []
         self.routingTable = {}
 
     def createSimpleTopology(self): 
@@ -84,12 +85,13 @@ class Topology:
           lineDict = {int(i.split(":")[0].strip()) : int(i.split(":")[1].strip()) for i in ti}
           self.routingTable[i] = lineDict
           self.nodes.append(Node(i + 1, lineDict))
+          self.nodeSwids.append(i + 1)
 
     def createTopologyFromPath(self, path):
       with open(path) as csvfile:
         topologyItems = csv.reader(csvfile, delimiter=',')
         for ti in topologyItems:
-          self.links.append(Link(self.nodes[int(ti[0])], self.nodes[int(ti[1])]))
+          self.links.append(Link(self.nodes[int(ti[0]) - 1 ], self.nodes[int(ti[1]) - 1]))
 
 class Network: 
      def __init__(self, b):  
@@ -105,6 +107,7 @@ class Network:
      def simulate(self, _src, _dst): 
          self.loop = False
          self.done = False
+         self.hops = 0 
          packet = Packet(src = _src , dst = _dst, ttl = 20)
          curr_node = next((x for x in self.topology.nodes if x.swid == packet.src), None)
          while(True): 
@@ -116,11 +119,11 @@ class Network:
               # re route from curr 
               print("Rerouting to generate this new table: ")
               print(self.rerouteFromPath(self.netBfs(curr_node.swid, packet.dst)))  
-              break
+              return self.hops
             curr_node = next((x for x in self.topology.nodes if x.swid == curr_node.next_hop), None) 
             if self.done: 
                 print("Routed successfully after " + str(self.hops) + " hops")
-                break 
+                return self.hops
 
      def netBfs(self, src, dst): 
          q = []
@@ -178,10 +181,10 @@ else:
 
 
 
-network.simulate(1, 6)
-network.simulate(1, 6)
-network.simulate(1, 5)
-network.simulate(1, 5)
+hops = network.simulate(1, 19)
+hops2 = network.simulate(1, 19)
+#network.simulate(1, 5)
+#network.simulate(1, 5)
 
 #work on hop counting
 # work on various simulations
