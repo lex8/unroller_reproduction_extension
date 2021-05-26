@@ -30,7 +30,7 @@ class Node:
         if self.swid == packet.swid: 
             network.loop = True
 
-        if packet.hop_count == (network.phase_size - 1): 
+        if packet.hop_count >= (network.phase_size - 1): 
             packet.hop_count = 0
             network.phase_size *= network.b 
             packet.swid = math.inf  
@@ -42,7 +42,6 @@ class Node:
         
         if reset or packet.swid > self.swid: 
             packet.swid = self.swid 
-
         self.next_hop = self.routing[packet.dst]
         return True
     
@@ -122,7 +121,6 @@ class Network:
               return self.hops
             curr_node = next((x for x in self.topology.nodes if x.swid == curr_node.next_hop), None) 
             if self.done: 
-                print("Routed successfully after " + str(self.hops) + " hops")
                 return self.hops
 
      def netBfs(self, src, dst): 
@@ -181,8 +179,12 @@ else:
 
 
 
-hops = network.simulate(1, 19)
-hops2 = network.simulate(1, 19)
+hops = network.simulate(3, 19)
+hops2 = network.simulate(3, 19)
+hopTotal = hops + hops2
+print("Routed successfully after " + str(hopTotal) + " hops")
+
+
 #network.simulate(1, 5)
 #network.simulate(1, 5)
 
