@@ -38,7 +38,6 @@ class Node:
         
         if network.loop: 
             print("loop detected")
-            #add reroute 
             return False
         
         if reset or packet.swid > self.swid: 
