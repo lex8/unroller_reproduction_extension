@@ -18,15 +18,13 @@ class Node:
 
     #unroller method based on https://github.com/kucejan/unroller/blob/master/unroller.p4app/unroller.p4 and conversations with Jan Kucera
     def unroller_alg(self, packet, network): 
-        #print("At Node " + str(self.swid))
         packet.hop_count += 1
         packet.ttl -= 1
         reset = False
         if(self.swid == packet.dst):
             network.done = True 
-            #print("Destination Reached")
             return True
-        #print("Packet swid " + str(packet.swid))
+       
         if self.swid == packet.swid: 
             network.loop = True
 
@@ -37,7 +35,6 @@ class Node:
             reset = True 
         
         if network.loop: 
-            #print("loop detected")
             return False
         
         if reset or packet.swid > self.swid: 

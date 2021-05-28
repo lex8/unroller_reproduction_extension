@@ -26,16 +26,19 @@ for frame in dfs:
     for before in frame['B'].unique(): 
         dfsIn.append(grouped.get_group(before))
     counter = 0 
-    markers = ['tab:blue','tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:cyan',  'tab:olive']
+    markers = ['#658cbb','#03012d', '#758da3', '#840000']
     before = 1
     for frameB in dfsIn:
         if (counter == 0): 
-            ax = frameB.plot.scatter(x = 'LoopVal', y = 'Hops', color = markers[counter], label=before)
+            ax = frameB.plot(x = 'LoopVal', y = 'Hops', color = markers[counter], label=before, linestyle="-", marker='o')
+       
         else: 
-            frameB.plot.scatter(x =  'LoopVal', y = 'Hops', color = markers[counter], ax = ax, label=before)
+            frameB.plot(x =  'LoopVal', y = 'Hops', color = markers[counter], ax = ax, label=before, linestyle="-", marker='o')
+           
         counter += 1 
         before +=1
     ax.legend(title="Hops before Loop")
+
     ax.set_xlabel("Loop Length")
     ax.set_ylabel("Hops")
     ax.get_figure().savefig("_".join(args.path.split("_")[0:4]) +"_Plots/" + str(bCount) + "_" +  args.path[: len(args.path) - 3] + "png") 
