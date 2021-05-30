@@ -1,9 +1,13 @@
 
 # CS 244 Extensions 
 ## The Rerouting Simulator 
+The simulator (sim.py) is inspired by ns-3's object oriented approach to network simulations and defines classes for various components of the network (Packet, Node, Link, Topology, Network). It includes an implementation of the Unroller algorithm placed at the node. It also includes a BFS based rerouting mechanism which is called where the original simulator dropped packets. The simulator can be provided a csv containing a topology defined with two connected nodes on each line and an arbitrary routing table-- the user would append code to simulate for a particular source and destination however many times they would like to. There is also an option to run a "full experiment" where the use can provide a particular topology and a folder of routing tables as well as metadata regarding a source and destination for each experiment. An example of a full experiment is runnable via att.sh over the AT&T North America network for 9 different loops with 1, 2, 3, or 4 nodes before loops, a total of 36 experiments. There is also a script called sim_plotter.py which given the output of our simulator, can produce the visualizations shown in out results section (att.sh will also generate the visualizations). 
 
+To run the bash script, run ./att.sh in the rerouting_simulator directory
 
 ## Rerouting Simulator CSV interface
+
+To run with the CSV interface run python sim.py -rt <routing table csv> -t <topology csv> in the rerouting_simulator directory after adding calls to simulate in the sim.py file
 
 ## The Plotter Script 
 
