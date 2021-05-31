@@ -42,6 +42,7 @@ class Node:
         
         if reset or packet.swid > self.swid: 
             packet.swid = self.swid 
+        print(self.routing)
         self.next_hop = self.routing[packet.dst]
         return True
     
