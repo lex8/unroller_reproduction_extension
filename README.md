@@ -12,7 +12,11 @@ To run the bash script, run ./att.sh in the rerouting_simulator directory
 
 ## Rerouting Simulator CSV interface
 
-To run with the CSV interface run python sim.py -rt <routing table csv> -t <topology csv> in the rerouting_simulator directory after adding calls to simulate in the sim.py file
+To run with the CSV interface run 
+```
+python sim.py -rt <routing table csv> -t <topology csv> 
+```
+in the rerouting_simulator directory after adding calls to simulate in the sim.py file
 
 ## The Plotter Script 
 
