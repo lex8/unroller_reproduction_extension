@@ -18,15 +18,13 @@ class Node:
 
     #unroller method based on https://github.com/kucejan/unroller/blob/master/unroller.p4app/unroller.p4 and conversations with Jan Kucera
     def unroller_alg(self, packet, network): 
-        print("At Node " + str(self.swid))
         packet.hop_count += 1
         packet.ttl -= 1
         reset = False
         if(self.swid == packet.dst):
             network.done = True 
-            print("Destination Reached")
             return True
-        print("Packet swid " + str(packet.swid))
+       
         if self.swid == packet.swid: 
             network.loop = True
 
@@ -37,7 +35,6 @@ class Node:
             reset = True 
         
         if network.loop: 
-            print("loop detected")
             return False
         
         if reset or packet.swid > self.swid: 
@@ -88,6 +85,7 @@ class Topology:
           self.nodeSwids.append(i + 1)
 
     def createTopologyFromPath(self, path):
+      self.links.clear() 
       with open(path) as csvfile:
         topologyItems = csv.reader(csvfile, delimiter=',')
         for ti in topologyItems:
@@ -96,15 +94,13 @@ class Topology:
 class Network: 
      def __init__(self, b):  
          self.b = b 
-         # self.topology = Topology() 
-         
          self.loop = False 
          self.done = False
          self.phase_size = 1
          self.hops = 0 
-         # self.topology.createSimpleTopology()
+     
 
-     def simulate(self, _src, _dst): 
+     def simulate(self, _src, _dst, fromSource): 
          self.loop = False
          self.done = False
          self.hops = 0 
@@ -115,10 +111,12 @@ class Network:
             val = curr_node.unroller_alg(packet, self)
             if self.loop:
               # re route from source
-            #  print(self.rerouteFromPath(self.netBfs(packet.src, packet.dst)))
+              if fromSource: 
+                self.rerouteFromPath(self.netBfs(packet.src, packet.dst))
               # re route from curr 
-              print("Rerouting to generate this new table: ")
-              print(self.rerouteFromPath(self.netBfs(curr_node.swid, packet.dst)))  
+              else: 
+                self.rerouteFromPath(self.netBfs(curr_node.swid, packet.dst))
+             
               return self.hops
             curr_node = next((x for x in self.topology.nodes if x.swid == curr_node.next_hop), None) 
             if self.done: 
@@ -160,8 +158,44 @@ class Network:
             self.topology.nodes = temp
             return self.topology.routingTable
 
-
-
+def fullRun(metadata): 
+  original_stdout = sys.stdout 
+  fromSource = False
+  metaFile = open(metadata)
+  file_name = metaFile.readline().strip()
+  for i in range(0, 2):
+    temp = "reroute_curr" 
+    if(fromSource):
+      temp = "reroute_src"
+    f = open(temp + "_" + file_name + ".csv" , 'w' )
+    sys.stdout = f 
+    print("LoopVal, B, b, Hops")
+    for b in range(2, 10): 
+      metaFile = open(metadata)
+      metaFile.readline().strip()
+      topoPath = metaFile.readline().strip()
+      folderPath = metaFile.readline().strip()
+      dest = int(metaFile.readline().strip())
+      while (True): 
+        loopSize = metaFile.readline().strip() 
+        if loopSize == "EOF": 
+          break
+        loopNum = int(loopSize.split("L")[1])
+        loopDesc = metaFile.readline().strip() 
+        for i in range (0, 4): 
+          infoBStart = metaFile.readline().strip() 
+          valB = infoBStart.split(":")[0].strip()
+          start = int(infoBStart.split(":")[1].strip())
+          fullPath = folderPath + loopSize + "_" + valB + ".csv"
+          network = Network(b)
+          network.topology = Topology()
+          network.topology.createRoutingTableFromPath(fullPath)
+          network.topology.createTopologyFromPath(topoPath)
+          hops = network.simulate(start, dest, fromSource)
+          hops2 = network.simulate(start, dest, fromSource)
+          print(str(loopNum) + "," + valB[1] + "," + str(b) + "," +  str(hops + hops2))
+          fromSource = True
+  sys.stdout = original_stdout
 
 network = Network(4)
 network.topology = Topology()
@@ -175,21 +209,17 @@ if len(sys.argv) > 1:
     #The next argument is the path to a cv containing topology data
     elif sys.argv[i] == "-t":
       network.topology.createTopologyFromPath(sys.argv[i + 1])
+    elif sys.argv[i] == "-f": 
+      fullRun(sys.argv[i + 1])
 else:
   network.topology.createSimpleTopology()
 
 
 
-hops = network.simulate(3, 19)
-hops2 = network.simulate(3, 19)
-hopTotal = hops + hops2
-print("Routed successfully after " + str(hopTotal) + " hops")
+#hops = network.simulate(13, 19, True)
+#hops2 = network.simulate(13, 19, True)
+#hopTotal = hops + hops2
+#print("Routed successfully after " + str(hopTotal) + " hops")
 
-
-#network.simulate(1, 5)
-#network.simulate(1, 5)
-
-#work on hop counting
-# work on various simulations
 
 
