@@ -39,7 +39,7 @@ class Node:
         
         if reset or packet.swid > self.swid: 
             packet.swid = self.swid 
-        print(self.routing)
+        #print(self.routing)
         self.next_hop = self.routing[packet.dst]
         return True
     
@@ -182,8 +182,8 @@ def fullRun(metadata):
         loopSize = metaFile.readline().strip() 
         if loopSize == "EOF": 
           break
-        print("HERE\n\n\n\n\n")
-        print("loopSize: " + (loopSize) + "\n\n\n") 
+        #print("HERE\n\n\n\n\n")
+        #print("loopSize: " + (loopSize) + "\n\n\n") 
         loopNum = int(loopSize.split("L")[1])
         loopDesc = metaFile.readline().strip() 
         for i in range (0, 4): 

@@ -2,7 +2,7 @@ complex_results
 topologies/complex.csv
 routing_tables/complex/
 19
-complex1
+19L2
 loop: 1-2
 B1: 13
 B2: 15
