@@ -1,0 +1,11 @@
+complex_results
+topologies/complex.csv
+routing_tables/complex/
+19
+complex1
+loop: 1-2
+B1: 13
+B2: 15
+B3: 16
+B4: 17
+EOF
