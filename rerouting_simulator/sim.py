@@ -39,7 +39,6 @@ class Node:
         
         if reset or packet.swid > self.swid: 
             packet.swid = self.swid 
-        #print(self.routing)
         self.next_hop = self.routing[packet.dst]
         return True
     
@@ -160,7 +159,7 @@ class Network:
 
 def fullRun(metadata): 
   original_stdout = sys.stdout 
-  fromSource = True
+  fromSource = False
   metaFile = open(metadata)
   file_name = metaFile.readline().strip()
   for i in range(0, 2):
@@ -168,9 +167,7 @@ def fullRun(metadata):
     if(fromSource):
       temp = "reroute_src"
     f = open(temp + "_" + file_name + ".csv" , 'w' )
-    print(temp + "_" + file_name + ".csv")
     sys.stdout = f 
-    temp + "_" + file_name + ".csv"
     print("LoopVal, B, b, Hops")
     for b in range(2, 10): 
       metaFile = open(metadata)
@@ -182,8 +179,6 @@ def fullRun(metadata):
         loopSize = metaFile.readline().strip() 
         if loopSize == "EOF": 
           break
-        #print("HERE\n\n\n\n\n")
-        #print("loopSize: " + (loopSize) + "\n\n\n") 
         loopNum = int(loopSize.split("L")[1])
         loopDesc = metaFile.readline().strip() 
         for i in range (0, 4): 
@@ -217,13 +212,3 @@ if len(sys.argv) > 1:
       fullRun(sys.argv[i + 1])
 else:
   network.topology.createSimpleTopology()
-
-
-
-#hops = network.simulate(13, 19, True)
-#hops2 = network.simulate(13, 19, True)
-#hopTotal = hops + hops2
-#print("Routed successfully after " + str(hopTotal) + " hops")
-
-
-
