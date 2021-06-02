@@ -2,6 +2,8 @@
 # CS 244 Extensions 
 ## Presentation 
 
+https://docs.google.com/presentation/d/17166eI9XvDa8Bjeargos01QxSindbPKGtkXVaAo1b8w/edit?usp=sharing
+
 ## Paper 
 
 
