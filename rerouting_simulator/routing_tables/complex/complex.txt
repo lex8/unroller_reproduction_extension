@@ -4,10 +4,10 @@ routing_tables/complex/
 14
 14L3
 loop: 11-10-9
-B1: 13
-B2: 2
-B3: 1
-B4: 4
+B1: 12
+B2: 13
+B3: 2
+B4: 1
 14L4
 loop: 32-30-29-31
 B1: 25

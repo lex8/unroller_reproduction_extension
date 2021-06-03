@@ -191,6 +191,7 @@ def fullRun(metadata):
           network.topology.createRoutingTableFromPath(fullPath)
           network.topology.createTopologyFromPath(topoPath)
           hops = network.simulate(start, dest, fromSource)
+          #hops2 = 0
           hops2 = network.simulate(start, dest, fromSource)
           print(str(loopNum) + "," + valB[1] + "," + str(b) + "," +  str(hops + hops2))
           fromSource = True
